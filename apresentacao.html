@@ -169,27 +169,29 @@
     </div>
 
     <div class="slide">
-      <h2>3. Regras de Negócio na Prática</h2>
+      <h2>3. Reatividade e Manipulação de Estado</h2>
       <ul class="explanations">
-        <li><strong>Array (Gestão de Filas):</strong> `unshift` e `shift` não são meros comandos; eles simulam a entrada e saída dinâmica de novos orçamentos no Ateliê.</li>
-        <li><strong>Switch (Roteamento):</strong> O motor ideal para categorizar escolhas do cliente de forma rápida (O(1) na maioria dos motores JS), simulando um terminal de autoatendimento.</li>
-        <li><strong>Objetos (Entidades):</strong> Transformamos a Joseli em uma entidade orientada a objetos, onde suas características (experiência) são mutáveis através de automação (`+= 1`).</li>
+        <li><strong>State Management:</strong> Os dados (Array, Switch e Objeto) não são estáticos. Eles formam um "banco de dados em memória" que pode ser atualizado.</li>
+        <li><strong>Event Listeners:</strong> Simulamos uma interface administrativa (`addEventListener('click')`). Quando o Admin insere um novo serviço, o JavaScript processa o input.</li>
+        <li><strong>Atualização Dinâmica:</strong> A função `atualizarTela()` atua como um motor de re-renderização, reagindo às mudanças e atualizando o DOM instantaneamente, preparando o terreno para frameworks reativos (como React).</li>
       </ul>
       
       <div class="code-block-wrapper">
-        <div class="code-header good"><span>✅ Manipulação de Dados (script.js)</span></div>
-        <pre><code><span class="code-comment">// Gestão de Fila (Array)</span>
-<span class="code-keyword">let</span> servicos = [<span class="code-value">"barra de calça"</span>, <span class="code-value">"ajuste"</span>];
-servicos.unshift(<span class="code-value">"figurino"</span>); <span class="code-comment">// Adiciona ao topo da fila</span>
+        <div class="code-header good"><span>✅ Reatividade em Ação (script.js)</span></div>
+        <pre><code><span class="code-comment">// 1. O "Estado" (Banco de dados temporário)</span>
+<span class="code-keyword">let</span> servicos = [<span class="code-value">"barra"</span>, <span class="code-value">"ajuste"</span>];
 
-<span class="code-comment">// Roteador de Decisão (Switch)</span>
-<span class="code-keyword">switch</span> (opcaoCliente) {
-  <span class="code-keyword">case</span> 3: servicoEscolhido = <span class="code-value">"Confecção sob medida"</span>; <span class="code-keyword">break</span>;
+<span class="code-comment">// 2. O Motor de Renderização</span>
+<span class="code-keyword">function</span> <span class="code-property">atualizarTela</span>() {
+  painelArray.innerText = servicos.join(<span class="code-value">", "</span>);
 }
 
-<span class="code-comment">// Entidade Modelada (Objeto)</span>
-<span class="code-keyword">let</span> costureira = { nome: <span class="code-value">"Joseli"</span>, experiencia: <span class="code-value">5</span> };
-costureira.experiencia += <span class="code-value">1</span>; <span class="code-comment">// Automação de incremento anual</span></code></pre>
+<span class="code-comment">// 3. O Ouvinte de Eventos (O clique do Botão)</span>
+document.getElementById(<span class="code-value">"btn-add-servico"</span>).addEventListener(<span class="code-value">"click"</span>, () => {
+  <span class="code-keyword">const</span> novoServico = document.getElementById(<span class="code-value">"input-novo-servico"</span>).value;
+  servicos.push(novoServico); <span class="code-comment">// Atualiza o Estado</span>
+  <span class="code-property">atualizarTela</span>();            <span class="code-comment">// Re-desenha a Tela</span>
+});</code></pre>
       </div>
     </div>
 

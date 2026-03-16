@@ -438,3 +438,85 @@ footer{
   color: #733122; /* Marrom avermelhado do tema */
   font-weight: bold;
 }
+
+
+========================================== */
+/* ESTILOS DOS CONTROLES DO ADMIN (FORMS)     */
+/* ========================================== */
+
+/* Destaca a área de controle do resto do painel */
+.admin-controls {
+  margin-top: 25px;
+  padding: 20px;
+  background-color: #ffffff; /* Fundo branco para saltar aos olhos */
+  border-radius: 6px;
+  border: 1px solid #eaeaea;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); /* Sombra interna super sutil */
+}
+
+.admin-controls h3 {
+  color: #32498C; /* Azul do tema */
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  font-family: 'Cinzel', serif;
+}
+
+/* Alinhamento perfeito entre Input e Botão */
+.input-group {
+  display: flex;
+  gap: 15px; /* Espaço maior entre o campo e o botão */
+  margin-bottom: 15px;
+  align-items: stretch; /* Força o botão e o input a terem a exata mesma altura */
+}
+
+.input-group input {
+  flex: 1; /* O input cresce e ocupa todo o espaço que sobrar */
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Efeito bacana quando o usuário clica para digitar */
+.input-group input:focus {
+  border-color: #32498C; 
+  box-shadow: 0 0 0 3px rgba(50, 73, 140, 0.1);
+}
+
+.input-group button {
+  padding: 0 25px;
+  background-color: #F2A25C; /* Laranja do tema */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: background-color 0.3s, transform 0.1s;
+  white-space: nowrap; /* IMPEDE que o texto do botão quebre em duas linhas */
+}
+
+.input-group button:hover {
+  background-color: #d98d4a;
+}
+
+.input-group button:active {
+  transform: scale(0.98); /* Dá um efeito de "clique real" afundando o botão */
+}
+
+/* Botão de experiência com visual diferente (Secundário) */
+#btn-add-exp {
+  width: 100%;
+  padding: 15px 0;
+  background-color: #32498C; /* Azul para diferenciar das outras ações */
+  font-size: 1.05rem;
+  margin-top: 5px;
+}
+
+#btn-add-exp:hover {
+  background-color: #25366b;
+}

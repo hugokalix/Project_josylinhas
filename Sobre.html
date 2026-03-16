@@ -59,23 +59,39 @@
       </div>
     </main>
 
-    <div class="painel-js">
-        <h2>Meus Serviços internos do Ateliê</h2>
+   <div class="painel-js">
+        <h2>Sistema Interno do Ateliê</h2>
         
-        <p>
-          <strong>Serviços Ativos (Array):</strong> <br>
-          <span id="resultado-array">Gerando lista...</span>
-        </p>
-        
-        <p>
-          <strong>Último Orçamento (Switch):</strong> <br>
-          <span id="resultado-switch">Calculando...</span>
-        </p>
-        
-        <p>
-          <strong>Perfil da Costureira (Objeto):</strong> <br>
-          <span id="resultado-objeto">Carregando perfil...</span>
-        </p>
+        <div class="display-dados">
+          <p><strong>Serviços Ativos (Array):</strong> <br>
+          <span id="resultado-array">Gerando lista...</span></p>
+          
+          <p><strong>Último Orçamento (Switch):</strong> <br>
+          <span id="resultado-switch">Calculando...</span></p>
+          
+          <p><strong>Perfil da Costureira (Objeto):</strong> <br>
+          <span id="resultado-objeto">Carregando perfil...</span></p>
+        </div>
+
+        <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+        <div class="admin-controls">
+          <h3>⚙️ Controles do Administrador</h3>
+          
+          <div class="input-group">
+            <input type="text" id="input-novo-servico" placeholder="Novo serviço (ex: Bainha)">
+            <button id="btn-add-servico">Adicionar ao Estoque</button>
+          </div>
+
+          <div class="input-group">
+            <input type="number" id="input-nova-opcao" min="1" max="4" placeholder="Opção (1 a 4)">
+            <button id="btn-muda-opcao">Simular Orçamento</button>
+          </div>
+
+          <div class="input-group">
+            <button id="btn-add-exp" style="width: 100%;">🌟 Adicionar +1 ano de Experiência</button>
+          </div>
+        </div>
     </div>
     <footer>
       <div id="footer_content">
