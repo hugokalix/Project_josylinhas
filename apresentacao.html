@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refatoração: Ateliê Josylinhas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset e Variáveis Dark Mode */
+    :root {
+      --bg-dark: #121214;
+      --text-light: #e1e1e6;
+      --accent-orange: #F2A25C;
+      --accent-blue: #4267b3;
+      --code-bg: #202024;
+      --danger: #e25858;
+      --success: #04d361;
+      --react-blue: #61dafb;
+      --node-green: #68a063;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background-color: var(--bg-dark); 
+      color: var(--text-light); 
+      overflow: hidden; 
+    }
+
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 4px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-orange));
+      width: 0%; transition: width 0.4s ease; z-index: 1000;
+    }
+
+    .slider {
+      display: flex; width: 100%; height: 100vh;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .slide {
+      min-width: 100vw; height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 3rem 4rem; position: relative;
+    }
+
+    h1 { font-family: 'Cinzel', serif; font-size: 3.5rem; color: var(--accent-orange); margin-bottom: 1rem; text-align: center; }
+    h2 { font-size: 2.2rem; color: var(--accent-blue); margin-bottom: 1rem; text-align: center;}
+    
+    p.subtitle { font-size: 1.2rem; line-height: 1.6; max-width: 900px; text-align: center; margin-bottom: 2rem; color: #a8a8b3; }
+    
+    /* Listas para explicações mais ricas */
+    .explanations { max-width: 1000px; margin-bottom: 2rem; width: 100%; }
+    .explanations li { font-size: 1.15rem; color: #e1e1e6; margin-bottom: 0.8rem; line-height: 1.5; list-style-type: '⚡ '; }
+    .explanations strong { color: var(--accent-orange); }
+
+    .code-comparison { display: flex; gap: 2rem; width: 100%; max-width: 1200px; justify-content: center; }
+    .code-block-wrapper { flex: 1; max-width: 850px; width: 100%; }
+    
+    .code-header {
+      padding: 8px 16px; font-weight: bold; border-radius: 8px 8px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .code-header.bad { background-color: rgba(226, 88, 88, 0.15); color: var(--danger); border: 1px solid var(--danger); border-bottom: none;}
+    .code-header.good { background-color: rgba(4, 211, 97, 0.15); color: var(--success); border: 1px solid var(--success); border-bottom: none;}
+
+    pre {
+      background-color: var(--code-bg); padding: 1.5rem;
+      border-radius: 0 0 8px 8px; font-family: 'Fira Code', monospace; font-size: 0.95rem;
+      overflow-x: auto; border: 1px solid #323238; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .code-keyword { color: #ff7b72; } .code-property { color: #79c0ff; }
+    .code-value { color: #a5d6ff; } .code-comment { color: #8b949e; font-style: italic; }
+
+    /* NOVA CLASSE PARA IMAGEM FULLSCREEN */
+    .fullscreen-img-container {
+      width: 100%;
+      height: 75vh; /* Ocupa 75% da altura da tela */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .fullscreen-img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Garante que a imagem não distorça */
+      border-radius: 8px;
+    }
+
+    .controls {
+      position: fixed; bottom: 20px; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 4rem; z-index: 100;
+    }
+
+    .slide-counter { font-family: 'Fira Code', monospace; color: #8b949e; font-size: 1.1rem; }
+    .btn {
+      padding: 12px 28px; font-size: 1.1rem; font-weight: 600;
+      background: #202024; color: var(--text-light); border: 1px solid #323238; border-radius: 6px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn:hover:not(:disabled) { background: #323238; border-color: var(--accent-orange); }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  </style>
+</head>
+<body>
+
+  <div id="progress-bar"></div>
+
+  <div class="slider" id="slider">
+    
+    <div class="slide">
+      <h1>Arquitetura Front-End</h1>
+      <h2>Ateliê Josylinhas</h2>
+      <p class="subtitle">Proposta de Refatoração: Deixando para trás o código espaguete para abraçar uma estrutura modular, limpa e escalável.</p>
+    </div>
+
+    <div class="slide">
+      <h2>1. O Fim dos Pixels Fixos</h2>
+      <ul class="explanations">
+        <li><strong>O Problema:</strong> Elementos com `width: 920px` quebravam o layout em dispositivos móveis.</li>
+        <li><strong>A Solução:</strong> Implementação de unidades relativas (`max-width`) e <strong>Flexbox</strong> (`flex-wrap`). O design agora é fluido e se adapta nativamente a qualquer tela.</li>
+      </ul>
+      
+      <div class="code-comparison">
+        <div class="code-block-wrapper">
+          <div class="code-header bad"><span>❌ ANTES (artigo.css antigo)</span></div>
+          <pre><code><span class="code-property">.container</span> {
+  <span class="code-keyword">width</span>: <span class="code-value">920px</span>; <span class="code-comment">/* Engessado */</span>
+}</code></pre>
+        </div>
+
+        <div class="code-block-wrapper">
+          <div class="code-header good"><span>✅ DEPOIS (artigo.css novo)</span></div>
+          <pre><code><span class="code-property">.container</span> {
+  <span class="code-keyword">max-width</span>: <span class="code-value">920px</span>;
+  <span class="code-keyword">display</span>: <span class="code-value">flex</span>;
+  <span class="code-keyword">flex-wrap</span>: <span class="code-value">wrap</span>; <span class="code-comment">/* Fluido */</span>
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h2>2. Conexão DOM e Programação Defensiva</h2>
+      <ul class="explanations">
+        <li><strong>A Ponte (DOM):</strong> Utilizamos `getElementById` para conectar a lógica de Back-End (JS) aos elementos visuais (HTML), evitando prints sujos no console.</li>
+        <li><strong>A Trava de Segurança:</strong> O bloco `if` garante que as funções de serviço só sejam processadas na rota correta (`Sobre.html`). Isso previne vazamentos de memória e erros fatais no console em páginas que não possuem esse painel.</li>
+      </ul>
+      
+      <div class="code-block-wrapper">
+        <div class="code-header good"><span>✅ Segurança no script.js</span></div>
+        <pre><code><span class="code-comment">// 1. Mapeamento das saídas visuais na tela</span>
+<span class="code-keyword">const</span> painelArray = document.getElementById(<span class="code-value">"resultado-array"</span>);
+<span class="code-keyword">const</span> painelSwitch = document.getElementById(<span class="code-value">"resultado-switch"</span>);
+<span class="code-keyword">const</span> painelObjeto = document.getElementById(<span class="code-value">"resultado-objeto"</span>);
+
+<span class="code-comment">// 2. Programação Defensiva: Validação de Existência</span>
+<span class="code-keyword">if</span> (painelArray && painelSwitch && painelObjeto) {
+  <span class="code-comment">// A lógica pesada só executa se a tela correta estiver aberta...</span>
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h2>3. Regras de Negócio na Prática</h2>
+      <ul class="explanations">
+        <li><strong>Array (Gestão de Filas):</strong> `unshift` e `shift` não são meros comandos; eles simulam a entrada e saída dinâmica de novos orçamentos no Ateliê.</li>
+        <li><strong>Switch (Roteamento):</strong> O motor ideal para categorizar escolhas do cliente de forma rápida (O(1) na maioria dos motores JS), simulando um terminal de autoatendimento.</li>
+        <li><strong>Objetos (Entidades):</strong> Transformamos a Joseli em uma entidade orientada a objetos, onde suas características (experiência) são mutáveis através de automação (`+= 1`).</li>
+      </ul>
+      
+      <div class="code-block-wrapper">
+        <div class="code-header good"><span>✅ Manipulação de Dados (script.js)</span></div>
+        <pre><code><span class="code-comment">// Gestão de Fila (Array)</span>
+<span class="code-keyword">let</span> servicos = [<span class="code-value">"barra de calça"</span>, <span class="code-value">"ajuste"</span>];
+servicos.unshift(<span class="code-value">"figurino"</span>); <span class="code-comment">// Adiciona ao topo da fila</span>
+
+<span class="code-comment">// Roteador de Decisão (Switch)</span>
+<span class="code-keyword">switch</span> (opcaoCliente) {
+  <span class="code-keyword">case</span> 3: servicoEscolhido = <span class="code-value">"Confecção sob medida"</span>; <span class="code-keyword">break</span>;
+}
+
+<span class="code-comment">// Entidade Modelada (Objeto)</span>
+<span class="code-keyword">let</span> costureira = { nome: <span class="code-value">"Joseli"</span>, experiencia: <span class="code-value">5</span> };
+costureira.experiencia += <span class="code-value">1</span>; <span class="code-comment">// Automação de incremento anual</span></code></pre>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h2>Visão Geral da Nova Estrutura</h2>
+      <p class="subtitle" style="margin-bottom: 0;">Arquitetura modular das pastas garantindo separação de responsabilidades (SoC).</p>
+      
+      <div class="fullscreen-img-container">
+        <img src="img/arquitetura.png" alt="Mapa da Arquitetura Modular">
+      </div>
+    </div>
+
+    <div class="slide">
+      <h2>Escalonamento: Componentização</h2>
+      <ul class="explanations">
+        <li>A separação de Assets (CSS/Img/JS) preparou nosso projeto para ser convertido nativamente para <strong>React</strong> ou <strong>Angular</strong>.</li>
+        <li>O Header e o Footer, antes repetidos, estão perfeitamente isolados para se tornarem Componentes Virtuais (JSX).</li>
+      </ul>
+      
+      <div class="code-block-wrapper">
+        <div class="code-header" style="background-color: rgba(97, 218, 251, 0.15); color: var(--react-blue); border: 1px solid var(--react-blue); border-bottom: none;">
+          <span>⚛️ atelie-josylinhas-frontend/ (Arquitetura React SPA)</span>
+        </div>
+        <pre style="font-size: 0.9rem;"><code>├── 📁 src/                    
+│   ├── 📁 assets/             <span class="code-comment"><-- Nossa pasta 'img' vem pra cá!</span>
+│   ├── 📁 components/         
+│   │   ├── Header.jsx         <span class="code-comment">(Lógica do global.js entra aqui)</span>
+│   │   └── PainelJS.jsx       <span class="code-comment">(O painel com a Trava vira componente isolado)</span>
+│   ├── 📁 pages/              
+│   │   └── Sobre.jsx          
+│   └── 📁 styles/             
+│       └── global.css         <span class="code-comment">(O arquivo global que criamos!)</span></code></pre>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h2>Escalonamento Back-End: APIs REST</h2>
+      <ul class="explanations">
+        <li>Usando <strong>Node.js</strong> e Express, a lógica pesada de arrays e objetos sai do Front-End.</li>
+        <li>O servidor processa dados de forma Assíncrona e Não-bloqueante, devolvendo os orçamentos em formato JSON.</li>
+      </ul>
+      
+      <div class="code-block-wrapper">
+        <div class="code-header" style="background-color: rgba(104, 160, 99, 0.15); color: var(--node-green); border: 1px solid var(--node-green); border-bottom: none;">
+          <span>🟢 atelie-josylinhas-backend/ (Arquitetura Node.js)</span>
+        </div>
+        <pre style="font-size: 0.9rem;"><code>├── 📁 src/                    
+│   ├── 📁 controllers/        <span class="code-comment">(Onde a lógica do nosso Switch vai rodar)</span>
+│   ├── 📁 models/             <span class="code-comment">(Onde o Objeto 'costureira' vira Banco de Dados)</span>
+│   ├── 📁 routes/             <span class="code-comment">(URLs de comunicação Front -> Back)</span>
+│   └── server.js              <span class="code-comment">(Motor principal)</span></code></pre>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h2>A Joia da Coroa: Escalando com Django (MVT)</h2>
+      <ul class="explanations">
+        <li>O Framework perfeito para escalar negócios. Com a arquitetura base pronta, transformamos arquivos estáticos em <strong>Templates Dinâmicos</strong> instantaneamente.</li>
+        <li>A integração gera um Painel Administrativo out-of-the-box para a dona do Ateliê.</li>
+      </ul>
+      
+      <div class="code-block-wrapper">
+        <div class="code-header" style="background-color: rgba(242, 162, 92, 0.15); color: var(--accent-orange); border: 1px solid var(--accent-orange); border-bottom: none;">
+          <span>🐍 projeto_django_josylinhas/ (Arquitetura Django)</span>
+        </div>
+        <pre style="font-size: 0.9rem;"><code>├── 📁 app_atelie/             
+│   ├── 📁 templates/          <span class="code-comment"><-- Nossos HTMLs são movidos para cá</span>
+│   │   └── sobre.html         <span class="code-comment">(Receberá o Objeto via Context do Python)</span>
+│   │
+│   ├── 📁 static/             <span class="code-comment"><-- ARQUITETURA DE HOJE ENTRA AQUI!</span>
+│   │   ├── 📁 css/            <span class="code-comment">(global.css, sobre.css, home.css)</span>
+│   │   ├── 📁 js/             <span class="code-comment">(global.js, script.js)</span>
+│   │   └── 📁 img/            <span class="code-comment">(Pasta unificada de imagens)</span>
+│   │
+│   ├── views.py               <span class="code-comment">(Substitui a lógica de roteamento JS)</span>
+│   └── models.py              <span class="code-comment">(Gera a tabela da Costureira automaticamente)</span></code></pre>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h2>Comparativo Tecnológico</h2>
+      <p class="subtitle">Análise para decisão técnica na próxima sprint.</p>
+      
+      <div class="code-comparison">
+        <div class="code-block-wrapper">
+          <div class="code-header" style="background-color: rgba(104, 160, 99, 0.15); color: var(--node-green); border: 1px solid var(--node-green); border-bottom: none;">
+            <span>🟢 Node.js</span>
+          </div>
+          <pre><code><span class="code-comment">// Perfil de Uso Ideal</span>
+<span class="code-property">- Linguagem única (JavaScript)</span>
+<span class="code-property">- Alta Concorrência (I/O)</span>
+<span class="code-property">- Arquitetura de Microsserviços</span></code></pre>
+        </div>
+
+        <div class="code-block-wrapper">
+          <div class="code-header" style="background-color: rgba(242, 162, 92, 0.15); color: var(--accent-orange); border: 1px solid var(--accent-orange); border-bottom: none;">
+            <span>🐍 Django (Python)</span>
+          </div>
+          <pre><code><span class="code-comment">// Perfil de Uso Ideal</span>
+<span class="code-property">- Desenvolvimento Acelerado (RAD)</span>
+<span class="code-property">- Painel de Admin Embutido</span>
+<span class="code-property">- Maior robustez e segurança nativa</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h1>Conclusão & Deploy</h1>
+      <p class="subtitle">A casa está arrumada. O código está limpo, modularizado e seguro.</p>
+      
+      <ul class="explanations" style="display: flex; flex-direction: column; align-items: center; text-align: left;">
+        <li>🚀 <strong>Status:</strong> Front-End refatorado com sucesso.</li>
+        <li>📦 <strong>Assets:</strong> CSS e JS globalizados e responsivos.</li>
+        <li>🔐 <strong>Lógica:</strong> DOM manipulado com segurança e performance.</li>
+        <li>🎯 <strong>Próximo passo sugerido:</strong> Iniciar modelagem em Python (Django).</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="prevBtn" onclick="moveSlide(-1)" disabled>← Voltar</button>
+    <div class="slide-counter"><span id="current-slide">1</span> / <span id="total-slides">10</span></div>
+    <button class="btn" id="nextBtn" onclick="moveSlide(1)">Avançar →</button>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const slider = document.getElementById('slider');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progress-bar');
+    const currentSlideText = document.getElementById('current-slide');
+    
+    document.getElementById('total-slides').innerText = slides.length;
+
+    function updateUI() {
+      slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === slides.length - 1;
+      currentSlideText.innerText = currentSlide + 1;
+      const progress = ((currentSlide + 1) / slides.length) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    function moveSlide(direction) {
+      currentSlide += direction;
+      updateUI();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) moveSlide(1);
+      if (e.key === 'ArrowLeft' && currentSlide > 0) moveSlide(-1);
+    });
+
+    updateUI();
+  </script>
+
+</body>
+</html>
